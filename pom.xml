@@ -70,6 +70,7 @@
   <modules>
     <module>elasticsearch</module>
     <module>common-utils</module>
+    <module>zookeeper</module>
   </modules>
   <build>
     <plugins>
