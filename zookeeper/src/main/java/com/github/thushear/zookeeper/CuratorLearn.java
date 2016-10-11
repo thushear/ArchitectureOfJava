@@ -44,6 +44,8 @@ public class CuratorLearn {
     byte[] data1 = client.getData().storingStatIn(stat).forPath(path + "/c1");
     System.out.println(new String(data1) + ", stat =" + stat);
 
+
+
   }
 
 }
