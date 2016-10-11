@@ -2,6 +2,7 @@ package com.github.thushear.zookeeper;
 
 import com.alibaba.fastjson.JSON;
 import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -16,6 +17,10 @@ public class ZookeeperNativeClient implements Watcher {
 
   private static CountDownLatch countDownLatch = new CountDownLatch(1);
 
+  private static Stat stat = new Stat();
+
+  static ZooKeeper zooKeeper ;
+
   @Override
   public void process(WatchedEvent watchedEvent) {
     System.out.println(JSON.toJSONString(watchedEvent));
@@ -23,6 +28,14 @@ public class ZookeeperNativeClient implements Watcher {
       countDownLatch.countDown();
        if (Event.EventType.NodeChildrenChanged == watchedEvent.getType()){
          System.out.println("reget");
+         try {
+           System.out.println("getData = " +  new String(zooKeeper.getData(watchedEvent.getPath(),true,stat)));
+         } catch (KeeperException e) {
+           e.printStackTrace();
+         } catch (InterruptedException e) {
+           e.printStackTrace();
+         }
+         System.out.println(stat.getCzxid() + "," + stat.getMzxid() + "," + stat.getVersion());
        }
     }
 
@@ -30,7 +43,7 @@ public class ZookeeperNativeClient implements Watcher {
 
 
   public static void main(String[] args) throws IOException, KeeperException, InterruptedException {
-    ZooKeeper zooKeeper = new ZooKeeper("127.0.0.1:2181",5000,new ZookeeperNativeClient());
+    zooKeeper = new ZooKeeper("127.0.0.1:2181",5000,new ZookeeperNativeClient());
     System.out.println(JSON.toJSONString( zooKeeper.getState()));
     System.out.println(zooKeeper.getSessionId());
     System.out.println(Arrays.toString(zooKeeper.getSessionPasswd()) );
@@ -40,6 +53,8 @@ public class ZookeeperNativeClient implements Watcher {
     String syncPath2 = zooKeeper.create("/zk-test-ephemeral","testtest".getBytes(),ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.EPHEMERAL_SEQUENTIAL);
     System.out.println("syncPath2 = " + syncPath2);
 
+
+
     zooKeeper.create("/zk-test-ephemeral-async","test".getBytes(),ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.EPHEMERAL,new IStringCallback(),"i am context");
     zooKeeper.create("/zk-test-ephemeral-async","test".getBytes(),ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.EPHEMERAL,new IStringCallback(),"i am context");
     zooKeeper.create("/zk-test-ephemeral-async","test".getBytes(),ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.EPHEMERAL_SEQUENTIAL,new IStringCallback(),"i am context");
@@ -48,8 +63,11 @@ public class ZookeeperNativeClient implements Watcher {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    String childPath = "/zk-learn1";
+    String childPath = "/zk-learn2";
     zooKeeper.create(childPath,"test".getBytes(),ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);
+    System.out.println("getData = " +  new String(zooKeeper.getData(childPath,true,stat)));
+    System.out.println(stat.getCzxid() + "," + stat.getMzxid() + "," + stat.getVersion());
+    zooKeeper.setData(childPath,"123".getBytes(),-1);
     zooKeeper.create(childPath + "/c1","test".getBytes(),ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.EPHEMERAL);
     List<String> childList = zooKeeper.getChildren(childPath,true);
     System.out.println("childList = " + childList);
