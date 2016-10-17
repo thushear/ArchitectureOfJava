@@ -1,0 +1,9 @@
+package netty;
+option java_package = "com.thushear.book.serial.protobuf";
+option java_outer_classname = "SubscribeReqProto";
+
+messsge SubscribeReq{
+  required int32 id = 1;
+  required string name = 2;
+  required string phone = 3;
+}

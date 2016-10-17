@@ -72,6 +72,7 @@
     <module>common-utils</module>
     <module>zookeeper</module>
     <module>msf</module>
+    <module>netty</module>
   </modules>
   <build>
     <plugins>
@@ -90,5 +91,7 @@
 
     </plugins>
   </build>
+
+
 
 </project>
