@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by kongming on 2016/10/19.
@@ -21,24 +22,76 @@ public class ReflectLearn {
 //        System.out.println("aClass = " + aClass.getName());
 //      }
 //    }
-    String str  = "method=substring";
-    Method getMethod = String.class.getMethod("substring",int.class,int.class);
-    System.out.println(getMethod.getName());
-    Object result = getMethod.invoke("aaaa",0,2);
-    System.out.println("result = " + result);
+//    String str  = "method=substring";
+//    Method getMethod = String.class.getMethod("substring",int.class,int.class);
+//    System.out.println(getMethod.getName());
+//    Object result = getMethod.invoke("aaaa",0,2);
+//    System.out.println("result = " + result);
+//
+//    System.out.println("int.class.getName() = " + int.class.getName());
+//    System.out.println("int.class.getName() = " + int.class.getTypeName());
+//    Class clazz = forName("int");
+//    Class clazz1 = forName("java.lang.String");
+//    System.out.println("clazz1 = " + clazz1);
+//    System.out.println("clazz = " + clazz);
 
-    System.out.println("int.class.getName() = " + int.class.getName());
-    System.out.println("int.class.getName() = " + int.class.getTypeName());
-    Class clazz = forName("int");
-    Class clazz1 = forName("java.lang.String");
-    System.out.println("clazz1 = " + clazz1);
-    System.out.println("clazz = " + clazz);
+    // basic info
+
+    Class integerClass = int.class;
+    printInfo(integerClass);
+
+    Class intArrayClass = int[].class;
+    printInfo(intArrayClass);
+
+    Class boxIntegerClass = Integer.class;
+
+    printInfo(boxIntegerClass);
+
+    Class boxIntegerArrayClass = Integer[].class;
+
+    printInfo(boxIntegerArrayClass);
+
+    Class StringClass = String.class;
+
+    printInfo(StringClass);
+
+    Class StringArrayClass = String[].class;
+
+    printInfo(StringArrayClass);
+
+    Class  executorServiceClass = ExecutorService.class;
+
+    printInfo(executorServiceClass);
+
+    Class  executorServiceArrayClass = ExecutorService[].class;
+
+    printInfo(executorServiceArrayClass);
+
+
+    // Class.forname
+
+    Class.forName("[I");
+
+    Class forNameIntegerArray = Class.forName("[Ljava.lang.Integer;");
+    printInfo(forNameIntegerArray);
+
+    Class forNameString = Class.forName("java.lang.Integer");
+    printInfo(forNameString);
+
+    Class forNameStringArray = Class.forName("[Ljava.lang.Integer;");
+    printInfo(forNameStringArray);
+
+    //
+    boolean isAssign = Number.class.isAssignableFrom(Integer.class);
+    System.out.println("isAssign = " + isAssign);
 
   }
 
-
-
-
+  private static void printInfo(Class aClass) {
+    System.out.printf("simplename %s cannonicalName %s name %s typename %s isPrimitive %s isArray %s  getComponentType %s isInterface %s \n",aClass.getSimpleName()
+            ,aClass.getCanonicalName(),aClass.getName(),aClass.getTypeName(),aClass.isPrimitive(),aClass.isArray(),aClass.getComponentType(),aClass.isInterface());
+//    System.out.println("getSimpleName="  aClass.getSimpleName() + ":" + aClass.getCanonicalName() + ":" + aClass.getName() + ":" + aClass.getTypeName() + ":" + aClass.isPrimitive() + ":" + aClass.isArray());
+  }
 
 
   /**
@@ -85,6 +138,7 @@ public class ReflectLearn {
    * short(S).
    */
   public static final char JVM_SHORT = 'S';
+
 
 
   private static final ConcurrentMap<String, Class<?>> NAME_CLASS_CACHE = new ConcurrentHashMap<String, Class<?>>();
