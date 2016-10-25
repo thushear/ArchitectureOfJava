@@ -1,5 +1,8 @@
 package com.github.thushear.reflect;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -40,6 +43,58 @@ public class ClassAPIMan {
         System.out.println(intArrayClass.getName());
 
 
+        /**
+         * 判定指定的 Class 对象是否表示一个基本类型。
+         有九种预定义的 Class 对象，表示八个基本类型和 void。这些类对象由 Java 虚拟机创建，与其表示的基本类型同名，即 boolean、byte、char、short、int、long、float 和 double。
+         */
+        isPrimitive(Integer.class);
+        isPrimitive(int.class);
+        isPrimitive(void.class);
+
+        /**
+         * isArray
+         */
+        isArray((new Object[1]).getClass());
+        isArray(String.class);
+        isArray(Array.class);
+
+        /**
+         * isAssignableFrom 判定此 Class 对象所表示的类或接口与指定的 Class 参数所表示的类或接口是否相同，或是否是其超类或超接口。如果是则返回 true；否则返回 false。如果该 Class 表示一个基本类型，且指定的 Class 参数正是该 Class 对象，则该方法返回 true；否则返回 false。
+         */
+        isAssignableFrom(Object.class,String.class);
+        isAssignableFrom(String.class,Object.class);
+
+        /**
+         * getMethod
+         */
+        Method[] arrayMethods = Array.class.getMethods();
+        for (Method arrayMethod : arrayMethods) {
+            System.out.print(arrayMethod.getName() + " : ");
+        }
+        System.out.println();
+
+
+
+
+    }
+
+
+
+
+
+
+    public static void isAssignableFrom(Class source,Class des){
+        System.out.println(source.isAssignableFrom(des));
+    }
+
+
+    public static void isArray(Class clazz){
+        System.out.println(clazz.getName() + ":" + clazz.isArray() + ":" + clazz.getComponentType());
+    }
+
+
+    public static void isPrimitive(Class clazz){
+        System.out.println(clazz.getName() + ":" + clazz.isPrimitive());
     }
 
 
