@@ -1,7 +1,13 @@
 package com.github.thushear.reflect;
 
+import com.alibaba.fastjson.JSON;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -12,7 +18,7 @@ import java.util.concurrent.ConcurrentMap;
 public class ClassAPIMan {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException {
         // Class.getName()
         testGetName();
 
@@ -69,17 +75,62 @@ public class ClassAPIMan {
          */
         Method[] arrayMethods = Array.class.getMethods();
         for (Method arrayMethod : arrayMethods) {
-            System.out.print(arrayMethod.getName() + " : ");
+            System.out.print(arrayMethod.getName() + " : " + arrayMethod.getParameterTypes() + ":"
+                    + arrayMethod.getReturnType() );
+            System.out.println();
         }
         System.out.println();
 
+        Object arrayObj = Array.newInstance(Integer.class,3);
+        System.out.println(arrayObj.getClass().isArray());
+        Array.set(arrayObj,0,new Integer(11));
+        System.out.println(JSON.toJSONString(arrayObj));
 
 
+        Class stringClass = name2class("java.lang.String");
+        Class[] parameterClasses = new Class[3];
+        String methodName = "valueOf";
+        String[] argsType = new String[3];
+        argsType[0] = "char[]";
+        argsType[1] = "int";
+        argsType[2] = "int";
+        for (int i = 0; i < argsType.length;i++) {
+             parameterClasses[i] = forName(argsType[i]);
+        }
+        Method method =  stringClass.getMethod(methodName,parameterClasses);
+        System.out.println(method.getName());
 
+
+        /**
+         * cast
+         */
+
+        Integer castInteger = Integer.class.cast(1);
+        System.out.println("castInteger = " + castInteger);
+
+        /**
+         * getCodeBase
+         */
+        System.out.println(getCodeBase(String.class));
+        System.out.println(getCodeBase(ClassAPIMan.class));
     }
 
 
 
+    public static String getCodeBase(Class<?> cls){
+        if (cls == null)
+            return null;
+        ProtectionDomain domain = cls.getProtectionDomain();
+        if (domain == null)
+            return null;
+        CodeSource source = domain.getCodeSource();
+        if (source == null)
+            return null;
+        URL location = source.getLocation();
+        if (location == null)
+            return null;
+        return location.getFile();
+    }
 
 
 
