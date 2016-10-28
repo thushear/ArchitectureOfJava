@@ -1,6 +1,7 @@
 package com.thushear.book.serial.protobuf;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.commons.codec.binary.Hex;
 
 import java.util.Arrays;
 
@@ -18,6 +19,9 @@ public class SubscribeReqProtoTest {
         SubscribeReqProto.SubscribeReq req = createSubscribeReq();
         System.out.println("before encode :" + req.toString());
         System.out.println("encode:" + Arrays.toString(req.toByteArray()));
+        char[] hexChars = Hex.encodeHex(req.toByteArray());
+        System.out.println(Hex.encodeHexString(req.toByteArray()));
+        System.out.println("hex:" + Arrays.toString(hexChars));
         //
         SubscribeReqProto.SubscribeReq req2 = decode(encode(req));
         System.out.println("aftere decode :" + req2.toString());

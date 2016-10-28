@@ -14,9 +14,23 @@ public class Server {
 
   private NettyTransporter transporter;
 
+  private transient boolean isStart = false;
+
+  private String bindAddress;
+
+  private int bindPort;
+
+
+  public Server(String bindAddress, int bindPort) {
+    this.bindAddress = bindAddress;
+    this.bindPort = bindPort;
+    this.serverHandler = new ServerHandler();
+    transporter = new NettyTransporter();
+  }
 
   public Server() {
     this.serverHandler = new ServerHandler();
+    transporter = new NettyTransporter();
 
   }
 
@@ -26,7 +40,16 @@ public class Server {
   }
 
 
-  public static void start(){
+  public  void start(){
+     if (isStart){
+        return;
+     }
+     isStart = true;
+    try {
+      transporter.startNetty(bindAddress,bindPort,serverHandler);
+    } catch (InterruptedException e) {
+      throw new RuntimeException("server start error");
+    }
 
   }
 

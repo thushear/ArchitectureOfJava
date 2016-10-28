@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * Created by kongming on 2016/3/17.
  */
-public class TimeServerHandler extends ChannelInboundHandlerAdapter {
+public class UnsafeTimeServerHandler extends ChannelInboundHandlerAdapter {
 
     private int counter = 0;
 

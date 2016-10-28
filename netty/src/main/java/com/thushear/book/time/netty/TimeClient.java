@@ -26,9 +26,15 @@ public class TimeClient {
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            //TCP 粘包 拆包 正常情况
                             ch.pipeline().addLast(new LineBasedFrameDecoder(1024))
                                     .addLast(new StringDecoder())
                                     .addLast(new TCPSafeTimeClientHandler());
+
+                            //TCP 粘包 拆包 不正常情况
+//                            ch.pipeline()
+//                                    .addLast(new UnsafeTimeClientHandler());
+
                         }
                     });
 

@@ -1,5 +1,9 @@
 package com.github.thushear;
 
+import com.github.thushear.msf.provider.Provider;
+import com.github.thushear.msf.server.Server;
+import com.github.thushear.msf.service.HelloService;
+import com.github.thushear.msf.service.HelloServiceImpl;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -31,8 +35,12 @@ public class AppTest
     /**
      * Rigourous Test :-)
      */
-    public void testApp()
-    {
-        assertTrue( true );
+    public void testApp() throws InterruptedException {
+        HelloService helloService = new HelloServiceImpl();
+        Provider<HelloService> provider = new Provider<>(helloService,"com.github.thushear.msf.service.HelloService");
+        Server server = new Server("0.0.0.0",8080);
+        provider.setServer(server);
+        provider.export();
+        Thread.currentThread().join();
     }
 }
