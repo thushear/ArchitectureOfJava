@@ -11,4 +11,13 @@ public class ProviderInvoker {
   public ProviderInvoker(Provider provider) {
     this.provider = provider;
   }
+
+
+  public Provider getProvider() {
+    return provider;
+  }
+
+  public void setProvider(Provider provider) {
+    this.provider = provider;
+  }
 }

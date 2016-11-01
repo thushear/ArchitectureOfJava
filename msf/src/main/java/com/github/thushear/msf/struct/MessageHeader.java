@@ -80,4 +80,39 @@ public final class MessageHeader {
                 ", magicCode=" + magicCode +
                 '}';
     }
+
+    /**
+     * 克隆后和整体原来不是一个对象，
+     * 属性相同，修改当前属性不会改变原来的
+     * map和原来是一个对象，修改当前map也会改原来的
+     *
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    @Override
+    public MessageHeader clone() {
+        MessageHeader header = null;
+        try {
+            header = (MessageHeader) super.clone();
+        } catch (CloneNotSupportedException e) {
+            header = new MessageHeader();
+            header.copyHeader(this);
+        }
+        return header;
+    }
+
+    public MessageHeader copyHeader(MessageHeader header){
+        this.magicCode = header.magicCode;
+        this.length = header.length;
+        this.sessionId = header.sessionId;
+        this.type = header.type;
+        this.priority = header.priority ;
+
+        Map<String, Object> tempMap = header.getAttachment();
+        for(Map.Entry<String,Object> entry:tempMap.entrySet()){
+            this.attachment.put(entry.getKey(),entry.getValue());
+        }
+        return this;
+    }
+
 }

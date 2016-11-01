@@ -5,5 +5,5 @@ package com.github.thushear.msf.service;
  */
 public interface HelloService {
 
-    void say(String text);
+    String say(String text);
 }
