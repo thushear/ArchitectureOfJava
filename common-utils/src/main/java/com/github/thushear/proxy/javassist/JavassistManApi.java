@@ -1,10 +1,16 @@
 package com.github.thushear.proxy.javassist;
 
+import com.github.thushear.proxy.ObjectInvoker;
+import com.github.thushear.test.EchoService;
+import com.google.common.collect.Sets;
 import javassist.*;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by kongming on 2016/11/1.
@@ -17,8 +23,83 @@ public class JavassistManApi  {
 
 //        testClassLoader();
 
-        testMethod();
+//        testMethod();
+
+        testCreateInvoker();
     }
+
+
+    static ClassPool classPool = new ClassPool();
+
+    static AtomicInteger atomicInteger = new AtomicInteger(1);
+
+    static {
+        classPool.appendClassPath(new LoaderClassPath(ClassLoader.getSystemClassLoader()));
+    }
+
+
+    /**
+     * Create Invoker
+     */
+    public static  void testCreateInvoker() throws NotFoundException, CannotCompileException, IOException {
+        //创建类对象
+        CtClass ctClass = classPool.makeClass(JavassistManApi.class.getName() + atomicInteger.incrementAndGet(),classPool.get(Object.class.getName()));
+        EchoService.class.getMethods();
+        Class<?>[] interfaces = new Class[2];
+        interfaces[0] = EchoService.class;
+        interfaces[1] = Serializable.class;
+        //添加接口
+        for (Class<?> aInterface : interfaces) {
+            ctClass.addInterface(resolve(aInterface));
+        }
+
+        //添加属性
+        ctClass.addField(new CtField(resolve(ObjectInvoker.class),"invoker",ctClass));
+
+        //添加构造器
+        CtConstructor proxyConstructor = new CtConstructor(resolve(new Class[]{ObjectInvoker.class}),ctClass);
+        //添加构造器方法体
+        proxyConstructor.setBody("{\n\tthis.invoker = $1;}");
+        ctClass.addConstructor(proxyConstructor);
+
+        ctClass.writeFile(JavassistManApi.class.getResource("/").getPath());
+
+    }
+
+    private static Set<ClassLoader> classLoaders = Sets.newHashSet();
+
+
+    public static CtClass[] resolve(Class<?>[] classes){
+        CtClass[] ctClasses = new CtClass[classes.length];
+        for (int i = 0; i < classes.length; i++) {
+            ctClasses[i] = resolve(classes[i]);
+        }
+        return ctClasses;
+    }
+
+    public static CtClass resolve(Class<?> clazz){
+        synchronized (classLoaders){
+            ClassLoader classLoader = clazz.getClassLoader();
+            if (classLoader != null && !classLoaders.contains(classLoader)){
+                classLoaders.add(classLoader);
+                classPool.appendClassPath(new LoaderClassPath(classLoader));
+            }
+            try {
+                return classPool.get(getJavaClassName(clazz));
+            } catch (NotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    public static String getJavaClassName(Class<?> clazz){
+        if (clazz.isArray()){
+            return getJavaClassName(clazz.getComponentType()) + "[]";
+        }
+        return clazz.getName();
+    }
+
 
 
     /**]
