@@ -2,13 +2,18 @@ package com.github.thushear.proxy.javassist;
 
 import com.github.thushear.proxy.ObjectInvoker;
 import com.github.thushear.test.EchoService;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import javassist.*;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class JavassistManApi  {
 
 
-    public static void main(String[] args) throws IOException, CannotCompileException, NotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, CannotCompileException, NotFoundException, InstantiationException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
 //        testReadAndWriteByteCode();
 
 //        testClassLoader();
@@ -41,10 +46,10 @@ public class JavassistManApi  {
     /**
      * Create Invoker
      */
-    public static  void testCreateInvoker() throws NotFoundException, CannotCompileException, IOException {
+    public static  void testCreateInvoker() throws NotFoundException, CannotCompileException, IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         //创建类对象
         CtClass ctClass = classPool.makeClass(JavassistManApi.class.getName() + atomicInteger.incrementAndGet(),classPool.get(Object.class.getName()));
-        EchoService.class.getMethods();
+
         Class<?>[] interfaces = new Class[2];
         interfaces[0] = EchoService.class;
         interfaces[1] = Serializable.class;
@@ -62,9 +67,72 @@ public class JavassistManApi  {
         proxyConstructor.setBody("{\n\tthis.invoker = $1;}");
         ctClass.addConstructor(proxyConstructor);
 
+        CtMethod  getMethod =
+                new CtMethod(resolve(Method.class),"_javassistGetMethod"
+                        ,resolve(new Class[]{String.class,String.class,Class[].class}),ctClass);
+        String getMethodBody = "try{\n" +
+                                "return com.github.thushear.proxy.javassist.JavassistManApi.getMethodCache($1,$2,$3);\n" +
+                                "} catch(Exception e){\n" +
+                                "throw new RuntimeException(\"unable to look up method,\",e);\n" +
+                                "}";
+
+        getMethod.setBody(getMethodBody);
+        ctClass.addMethod(getMethod);
+
+        //add hashcode Method
+        CtMethod hashCodeMethod = new CtMethod(resolve(Integer.TYPE),"hashCode",new CtClass[0],ctClass);
+        hashCodeMethod.setBody("{\n\treturn System.identityHashCode(this);\n}");
+        ctClass.addMethod(hashCodeMethod);
+
+        // add equals method
+        CtMethod equalsMethod = new CtMethod(resolve(Boolean.TYPE),"equals",
+                resolve(new Class[]{Object.class}),ctClass);
+        String equalsBody = "{\n\treturn this==$1;\n}";
+        equalsMethod.setBody(equalsBody);
+        ctClass.addMethod(equalsMethod);
+
+        // add implementation methods
+        Method[] methods = EchoService.class.getMethods();
+        for (Method method : methods) {
+            CtMethod ctMethod = new CtMethod(resolve(method.getReturnType())
+                    ,method.getName(),resolve(method.getParameterTypes()),ctClass);
+            String implementMethodBody = "{\n\t return ($r) invoker.invoke(this, "+ "_javassistGetMethod" +"(\""+method.getDeclaringClass().getName() +"\",\""
+                    + method.getName() + "\",$sig),$args);\n" +"}";
+            ctMethod.setBody(implementMethodBody);
+            ctClass.addMethod(ctMethod);
+        }
+
+        ObjectInvoker fixedStringObjInvoker = new ObjectInvoker() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object... arguments) throws Throwable {
+                System.out.println("args = " + arguments);
+                return "hello world";
+            }
+        };
+
+        EchoService echoService = (EchoService) ctClass.toClass().getConstructor(ObjectInvoker.class).newInstance(fixedStringObjInvoker);
+
+        echoService.echo("hello ");
+
         ctClass.writeFile(JavassistManApi.class.getResource("/").getPath());
 
     }
+
+    private static final Map<String, Method> methodCache = Maps.newHashMap();
+
+    public static Method getMethodCache(String className,String methodName,Class<?>[] parameterTypes) throws ClassNotFoundException, NoSuchMethodException {
+        String methodSignature = MethodSignature.getName(className,methodName,parameterTypes);
+        Method method = methodCache.get(methodSignature);
+        if (method == null) {
+            method = Class.forName(className).getMethod(methodName,parameterTypes);
+            methodCache.put(methodSignature,method);
+            return method;
+        }
+        return method;
+    }
+
+
+
 
     private static Set<ClassLoader> classLoaders = Sets.newHashSet();
 
@@ -196,4 +264,21 @@ class  MyTranslator implements Translator{
 class Point {
     int x, y;
     void move(int dx, int dy) { x += dx; y += dy; }
+}
+
+class MethodSignature{
+
+
+    public static String getName(String className,String methodName,Class<?>[] paramterTypes){
+        StringBuilder buf = new StringBuilder(className).append(".").append(methodName).append("(");
+        if (!ArrayUtils.isEmpty(paramterTypes)){
+            for (Class<?> paramterType : paramterTypes) {
+                buf.append(paramterType.getName()).append(",");
+            }
+        }
+        buf.append(")");
+        return buf.toString();
+    }
+
+
 }

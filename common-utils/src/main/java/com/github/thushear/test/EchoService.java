@@ -6,4 +6,6 @@ package com.github.thushear.test;
 public interface EchoService {
 
     public String echo(String name);
+
+    public Object echo(Object echo);
 }
