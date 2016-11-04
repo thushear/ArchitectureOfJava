@@ -1,6 +1,8 @@
 package com.github.thushear.proxy.javassist;
 
+import com.github.thushear.proxy.Interceptor;
 import com.github.thushear.proxy.ObjectInvoker;
+import com.github.thushear.proxy.ProxyUtils;
 import com.github.thushear.test.EchoService;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -30,7 +32,8 @@ public class JavassistManApi  {
 
 //        testMethod();
 
-        testCreateInvoker();
+//        testCreateInvoker();
+        testCreateInterceptor();
     }
 
 
@@ -41,6 +44,144 @@ public class JavassistManApi  {
     static {
         classPool.appendClassPath(new LoaderClassPath(ClassLoader.getSystemClassLoader()));
     }
+    private static final String GET_METHOD_NAME = "_javassistGetMethod";
+
+
+
+    /**
+     * Create Interceptor
+     */
+    public static void testCreateInterceptor() throws NotFoundException, CannotCompileException, IOException {
+        //创建类对象
+        CtClass ctClass = classPool.makeClass(JavassistManApi.class.getName() + atomicInteger.incrementAndGet(),classPool.get(Object.class.getName()));
+
+
+        Class<?>[] interfaces = new Class[2];
+        interfaces[0] = EchoService.class;
+        interfaces[1] = Serializable.class;
+        //添加接口
+        for (Class<?> aInterface : interfaces) {
+            ctClass.addInterface(resolve(aInterface));
+        }
+
+        //添加属性
+        ctClass.addField(new CtField(resolve(Object.class),"target",ctClass));
+        ctClass.addField(new CtField(resolve(Interceptor.class),"interceptor",ctClass));
+        CtMethod  getMethod =
+                new CtMethod(resolve(Method.class),"_javassistGetMethod"
+                        ,resolve(new Class[]{String.class,String.class,Class[].class}),ctClass);
+        String getMethodBody = "try{\n" +
+                "return com.github.thushear.proxy.javassist.JavassistManApi.getMethodCache($1,$2,$3);\n" +
+                "} catch(Exception e){\n" +
+                "throw new RuntimeException(\"unable to look up method,\",e);\n" +
+                "}";
+
+        getMethod.setBody(getMethodBody);
+        ctClass.addMethod(getMethod);
+
+        //add hashcode Method
+        CtMethod hashCodeMethod = new CtMethod(resolve(Integer.TYPE),"hashCode",new CtClass[0],ctClass);
+        hashCodeMethod.setBody("{\n\treturn System.identityHashCode(this);\n}");
+        ctClass.addMethod(hashCodeMethod);
+
+        // add equals method
+        CtMethod equalsMethod = new CtMethod(resolve(Boolean.TYPE),"equals",
+                resolve(new Class[]{Object.class}),ctClass);
+        String equalsBody = "{\n\treturn this==$1;\n}";
+        equalsMethod.setBody(equalsBody);
+        ctClass.addMethod(equalsMethod);
+
+        CtConstructor ctConstructor = new CtConstructor(resolve(new Class[]{Object.class,Interceptor.class}),ctClass);
+        ctConstructor.setBody("{\n" +
+                "\tthis.target = $1;\n" +
+                "\tthis.interceptor = $2; }");
+        ctClass.addConstructor(ctConstructor);
+        // add implementation methods
+        Method[] methods = EchoService.class.getMethods();
+
+        for (Method method : methods) {
+            CtMethod ctMethod = new CtMethod(resolve(method.getReturnType())
+                    ,method.getName(),resolve(method.getParameterTypes()),ctClass);
+
+            CtClass methodCtClass = classPool.makeClass(method.getDeclaringClass().getSimpleName() + "_" + method.getName() + "_invocation" + atomicInteger.incrementAndGet() ,resolve( JavassistInvocation.class));
+
+            CtConstructor constructor =
+                    new CtConstructor(resolve(new Class[] {Object.class, Object.class, Method.class,
+                            Object[].class}), methodCtClass);
+            constructor.setBody("{\n\tsuper($$);\n}");
+
+            methodCtClass.addConstructor(constructor);
+            CtMethod proceedMethod =
+                    new CtMethod(resolve(Object.class), "proceed", resolve(new Class[0]),
+                            methodCtClass);
+
+            Class<?>[] argumentTypes = method.getParameterTypes();
+            StringBuilder builder = new StringBuilder("{\n");
+            if (!Void.TYPE.equals(method.getReturnType())){
+                builder.append("\treturn ");
+                if (method.getReturnType().isPrimitive()){
+                    builder.append("new ");
+                    builder.append(ProxyUtils.getWrapperClass(method.getReturnType()).getName());
+                    builder.append("(");
+                }
+            }else {
+                builder.append("\t");
+            }
+            builder.append("( (");
+            builder.append(ProxyUtils.getJavaClassName(method.getDeclaringClass()));
+            builder.append(" )getTarget() ).");
+            builder.append(method.getName());
+            builder.append("(");
+            for (int i = 0; i < argumentTypes.length; ++i) {
+                final Class<?> argumentType = argumentTypes[i];
+                builder.append(createCastExpression(argumentType, "getArguments()[" + i + "]"));
+                if (i != argumentTypes.length - 1) {
+                    builder.append(", ");
+                }
+            }
+
+            if (!Void.TYPE.equals(method.getReturnType()) && method.getReturnType().isPrimitive()) {
+                builder.append(") );\n");
+            } else {
+                builder.append(");\n");
+            }
+
+            if (Void.TYPE.equals(method.getReturnType())) {
+                builder.append("\treturn null;\n");
+            }
+
+            builder.append("}");
+            String body = builder.toString();
+            proceedMethod.setBody(body);
+            methodCtClass.addMethod(proceedMethod);
+            Class  invocationClass =methodCtClass.toClass();
+            String methodbody =
+                    "{\n\t return ( $r ) interceptor.intercept( new " + invocationClass.getName()
+                            + "( this, target, " + GET_METHOD_NAME + "(\""
+                            + method.getDeclaringClass().getName() + "\", \"" + method.getName()
+                            + "\", $sig), $args ) );\n }";
+            ctMethod.setBody(methodbody);
+            ctClass.addMethod(ctMethod);
+            methodCtClass.writeFile(JavassistManApi.class.getResource("/").getPath());
+        }
+
+
+        ctClass.writeFile(JavassistManApi.class.getResource("/").getPath());
+        ctClass.toClass();
+
+    }
+
+
+
+    private static String createCastExpression(Class<?> type, String objectToCast) {
+        if (!type.isPrimitive()) {
+            return "( " + ProxyUtils.getJavaClassName(type) + " )" + objectToCast;
+        }
+
+        return "( ( " + ProxyUtils.getWrapperClass(type).getName() + " )" + objectToCast + " )." + type.getName()
+                + "Value()";
+    }
+
 
 
     /**
