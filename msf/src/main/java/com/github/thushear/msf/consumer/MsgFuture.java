@@ -59,7 +59,10 @@ public class MsgFuture<V> implements Future<V> {
 
     public MsgFuture<V> setSuccess(V result){
         if (setSuccess0(result)){
-            notifyAll();
+            synchronized (this){
+                notifyAll();
+            }
+
             return this;
         }
         throw new IllegalStateException("complete already: " + this);

@@ -16,8 +16,9 @@ public class ConsumerAppTest extends TestCase {
         HelloService helloService = helloServiceConsumer.refer();
 
         while (true){
-            Thread.sleep(10000);
-            helloService.say("hello world");
+            Thread.sleep(1000);
+            String sayResult = helloService.say("hello world");
+            System.out.println("sayResult = " + sayResult);
         }
 
 
