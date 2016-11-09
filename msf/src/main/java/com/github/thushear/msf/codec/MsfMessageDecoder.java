@@ -28,7 +28,7 @@ public class MsfMessageDecoder extends LengthFieldBasedFrameDecoder{
 //        ByteBuf frame = in;
         ByteBuf frame = (ByteBuf) super.decode(ctx,in);
         if (frame == null)
-            throw new RuntimeException("decode error");
+            return null;
 
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.setMagicCode(frame.readInt());

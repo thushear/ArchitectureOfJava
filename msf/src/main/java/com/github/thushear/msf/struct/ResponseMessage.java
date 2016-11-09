@@ -26,6 +26,13 @@ public class ResponseMessage extends BaseMessage {
         this.exception = exception;
     }
 
+
+    public boolean isError(){
+
+        return exception != null;
+    }
+
+
     @Override
     public String toString() {
         return "ResponseMessage{" +

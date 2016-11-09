@@ -27,6 +27,90 @@ public class ClassLoaderUtils {
 
 
   /**
+   * get name.
+   * java.lang.Object[][].class => "java.lang.Object[][]"
+   *
+   * @param c class.
+   * @return name.
+   */
+  public static String getName(Class<?> c)
+  {
+    if( c.isArray() )
+    {
+      StringBuilder sb = new StringBuilder();
+      do
+      {
+        sb.append("[]");
+        c = c.getComponentType();
+      }
+      while( c.isArray() );
+
+      return c.getName() + sb.toString();
+    }
+    return c.getName();
+  }
+
+
+  /**
+   * Class[]转String[] <br>
+   * 注意，得到的String可能不能直接用于Class.forName，请使用getClass(String)反向获取
+   *
+   * @param types
+   *         Class[]
+   * @return 对象描述
+   */
+  public static String[] getTypeStrs(Class[] types) {
+    if (CommonUtils.isEmpty(types)) {
+      return new String[0];
+    } else {
+      String[] strings = new String[types.length];
+      for (int i = 0; i < types.length; i++) {
+        strings[i] = getTypeStr(types[i]);
+      }
+      return strings;
+    }
+  }
+
+
+  public static String getTypeStr(Class clazz){
+    String typeStr;
+    if (clazz.isArray()){
+      String name = clazz.getName();
+      typeStr = jvmNameToCanonicalName(name);
+    }else {
+      typeStr = clazz.getName();
+    }
+    return typeStr;
+  }
+
+  private static String jvmNameToCanonicalName(String jvmName) {
+    boolean isarray = jvmName.charAt(0) == '[';
+    if (isarray) {
+      String cnName = ""; // 计数，看上几维数组
+      int i = 0;
+      for (; i < jvmName.length(); i++) {
+        if (jvmName.charAt(i) != '[') {
+          break;
+        }
+        cnName += "[]";
+      }
+      String componentType = jvmName.substring(i, jvmName.length());
+      if ("Z".equals(componentType)) cnName = "boolean" + cnName;
+      else if ("B".equals(componentType)) cnName = "byte" + cnName;
+      else if ("C".equals(componentType)) cnName = "char" + cnName;
+      else if ("D".equals(componentType)) cnName = "double" + cnName;
+      else if ("F".equals(componentType)) cnName = "float" + cnName;
+      else if ("I".equals(componentType)) cnName = "int" + cnName;
+      else if ("J".equals(componentType)) cnName = "long" + cnName;
+      else if ("S".equals(componentType)) cnName = "short" + cnName;
+      else cnName = componentType.substring(1,componentType.length()-1) + cnName; // 对象的 去掉L
+      return cnName;
+    }
+    return jvmName;
+  }
+
+
+  /**
    * 转换参数字符数组为class对象数组
    * @param typeStr
    * @return

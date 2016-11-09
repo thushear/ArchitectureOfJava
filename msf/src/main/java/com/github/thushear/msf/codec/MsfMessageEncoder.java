@@ -24,7 +24,7 @@ public class MsfMessageEncoder extends MessageToByteEncoder<BaseMessage> {
     protected void encode(ChannelHandlerContext ctx, BaseMessage msg, ByteBuf out) throws Exception {
 
         if (msg == null || msg.getHeader() == null)
-            throw new RuntimeException("msg or header is null stop encoder");
+            return;
 
         out.writeInt(msg.getHeader().getMagicCode());
         out.writeInt(msg.getHeader().getLength());
