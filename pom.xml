@@ -141,10 +141,11 @@
   </dependencies>
   <modules>
     <module>elasticsearch</module>
-    <module>common-utils</module>
+    <module>javaman</module>
     <module>zookeeper</module>
     <module>msf</module>
     <module>netty</module>
+    <module>async</module>
   </modules>
   <build>
     <plugins>
