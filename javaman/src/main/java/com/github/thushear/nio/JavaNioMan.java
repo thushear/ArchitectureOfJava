@@ -1,8 +1,6 @@
 package com.github.thushear.nio;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -21,10 +19,36 @@ public class JavaNioMan {
 //        basicBufferUsage();
 
 //        fileChannelTransfer();
-
-        selectApi();
+        fileChannelApi();
+//        selectApi();
 
     }
+
+
+
+
+    private static void fileChannelApi() throws IOException {
+
+        FileInputStream inputStream = new FileInputStream(new File(JavaNioMan.class.getResource("/").getPath() + "aopbeans.xml"));
+        FileChannel fileChannel = inputStream.getChannel();
+        ByteBuffer byteBuffer = ByteBuffer.allocate(512);
+        int bytesRead = fileChannel.read(byteBuffer);//read into buffer
+        while (bytesRead != -1){
+            System.out.println("read:" + bytesRead);
+            byteBuffer.flip();//make buffer ready for read
+
+            while (byteBuffer.hasRemaining()){
+                System.out.print ((char) byteBuffer.get());// read 1 byte at a time
+            }
+            byteBuffer.clear();//make buffer ready for writing
+
+            bytesRead = fileChannel.read(byteBuffer);
+            System.out.println();
+        }
+
+        inputStream.close();
+    }
+
 
 
 
