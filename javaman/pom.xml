@@ -10,7 +10,7 @@
     <artifactId>javaman</artifactId>
     <packaging>jar</packaging>
 
-    <name>common-util</name>
+    <name>javaman</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -18,6 +18,13 @@
     </properties>
 
     <dependencies>
+
+        <!--MP3工具-->
+        <dependency>
+            <groupId>com.mpatric</groupId>
+            <artifactId>mp3agic</artifactId>
+            <version>0.8.3</version>
+        </dependency>
 
         <dependency>
             <groupId>joda-time</groupId>

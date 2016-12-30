@@ -18,7 +18,7 @@ public class Nashorn1 {
     public static void main(String[] args) throws FileNotFoundException, ScriptException, NoSuchMethodException {
 
         ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-        engine.eval(new FileReader("res/nashorn.js"));
+        engine.eval(new FileReader("resources/nashorn1.js"));
 
         Invocable invocable = (Invocable) engine;
         Object result = invocable.invokeFunction("fun1","peter parker");

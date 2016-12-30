@@ -1,6 +1,7 @@
 package org.thushear.tut;
 
 /**
+ * 接口可以添加方法实现了~~~
  * Created by kongming on 2016/3/8.
  */
 interface Formula {

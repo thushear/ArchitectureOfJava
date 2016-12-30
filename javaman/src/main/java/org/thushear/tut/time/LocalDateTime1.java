@@ -20,6 +20,9 @@ public class LocalDateTime1 {
 //        LocalDateTime表示的是日期-时间。它将刚才介绍的日期对象和时间对象结合起来，形成了一个对象实例。LocalDateTime是不可变的，与LocalTime和LocalDate的工作原理相同。我们可以通过调用方法来获取日期时间对象中特定的数据域。
         LocalDateTime localDateTime =LocalDateTime.of(2014, Month.APRIL,11,22,22,33);
 
+
+
+
         System.out.println(localDateTime.getDayOfWeek());
 
         System.out.println(localDateTime.getDayOfYear());
@@ -40,7 +43,17 @@ public class LocalDateTime1 {
         System.out.println("now = " + now);
 
 
-        LocalDateTime time = new LocalDateTime();
+        Date da = new Date();
+        LocalDateTime ldf = LocalDateTime.ofInstant(da.toInstant(),ZoneId.systemDefault());
+        System.out.println("ldf = " + ldf);
+        System.out.println("da = " + da);
+        System.out.println(da.toInstant());
+
+
+        System.out.println(dateTimeFormatter.format(ldf));
+        System.out.println(dateTimeFormatter.format(da.toInstant()));
+
+
 
     }
 }
