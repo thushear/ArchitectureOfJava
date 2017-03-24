@@ -3,7 +3,15 @@ package com.github.thushear.audio;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.audio.mp3.MP3AudioHeader;
+import org.jaudiotagger.audio.mp3.MP3File;
+import org.jaudiotagger.tag.TagException;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -11,16 +19,43 @@ import java.io.IOException;
  */
 public class MP3Utils {
 
-    public static void main(String[] args) throws InvalidDataException, IOException, UnsupportedTagException {
+    public static void main(String[] args) throws InvalidDataException, IOException, UnsupportedTagException, TagException, ReadOnlyFileException, CannotReadException, InvalidAudioFrameException {
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 1000; i++) {
-            Mp3File mp3File = new Mp3File("D:\\05b87b41-4e60-4414-ba06-b7f8cfec7012.mp3");
+        File file = new File("D:\\mp3\\58c82162-b06a-4532-87dc-5cdd6f7e1f50.mp3");
+        for (int i = 0; i < 1; i++) {
+            Mp3File mp3File = new Mp3File("D:\\mp3\\58c82162-b06a-4532-87dc-5cdd6f7e1f50.mp3");
+            System.out.println(mp3File.getBitrate());
+            System.out.println(mp3File.getLength());
             System.out.println(mp3File.getLengthInSeconds());
-            String time ="0" + mp3File.getLengthInSeconds() / 60 + ":" + mp3File.getLengthInSeconds() % 60;
-        }
-        long end = System.currentTimeMillis();
+            System.out.println(mp3File.getLengthInMilliseconds());
+            System.out.println(mp3File.getBitrates());
+            System.out.println(mp3File.getSampleRate());
+            String time ="0" + mp3File.getLengthInSeconds() / 60 + ":" + ( mp3File.getLengthInSeconds() % 60 >= 10 ? mp3File.getLengthInSeconds() % 60 : "0" + mp3File.getLengthInSeconds() % 60);
+            System.out.println(time);
 
-        System.out.println("time = " + (end - start));
+            Mp3File mp3File1 = new Mp3File("D:\\mp3\\58c82162-b06a-4532-87dc-5cdd6f7e1f50.mp3");
+            System.out.println(mp3File1.getBitrate());
+            System.out.println(mp3File1.getLength());
+            System.out.println(mp3File1.getLengthInSeconds());
+            System.out.println(mp3File1.getLengthInMilliseconds());
+            System.out.println(mp3File1.getBitrates());
+            System.out.println(mp3File1.getSampleRate());
+            String time2 ="0" + mp3File1.getLengthInSeconds() / 60 + ":" + ( mp3File1.getLengthInSeconds() % 60 >= 10 ? mp3File1.getLengthInSeconds() % 60 : "0" + mp3File1.getLengthInSeconds() % 60);
+            System.out.println(time2);
+
+
+        }
+
+        MP3File f = (MP3File) AudioFileIO.read(file);
+        MP3AudioHeader mp3AudioHeader = (MP3AudioHeader) f.getAudioHeader();
+        System.out.println(mp3AudioHeader.getTrackLength());
+        System.out.println(mp3AudioHeader.getTrackLengthAsString());
+        System.out.println(mp3AudioHeader.getSampleRateAsNumber());
+        System.out.println(mp3AudioHeader.getBitRate());
+
+
+
+
 
     }
 }
