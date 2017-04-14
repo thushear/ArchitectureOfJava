@@ -16,5 +16,8 @@ public class SpringmanApplication {
 		springApplication.setBannerMode(Banner.Mode.LOG);
 		springApplication.run(args);
 
+
+
 	}
+
 }
