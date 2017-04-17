@@ -1,9 +1,12 @@
 package com.github.thushear.redis;
 
 import com.github.thushear.BaseTest;
+import com.github.thushear.redis.cache.Student;
+import com.github.thushear.redis.repo.StudentRepository;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -16,6 +19,7 @@ import org.springframework.data.redis.hash.ObjectHashMapper;
 
 import javax.annotation.Resource;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +37,12 @@ public class RedisTemplateTest extends BaseTest {
 
     @Resource(name = "lettuceRedisTemplate")
     private RedisTemplate lettuceRedisTemplate;
+
+
+    @Autowired
+    @Qualifier("studentRepository")
+    private StudentRepository studentRepository;
+
 
 
     @Test
@@ -96,6 +106,28 @@ public class RedisTemplateTest extends BaseTest {
 //
 //        Map<String,String> mapHashGet = hashOperations.entries("person");
 //        System.out.println("mapHashGet = " + mapHashGet);
+    }
+
+
+    @Test
+    public void testLettuce(){
+        ValueOperations<String,String> valueOperations = lettuceRedisTemplate.opsForValue();
+        valueOperations.set("cluster","lettuce");
+        String value = valueOperations.get("cluster");
+        System.out.println("value = " + value);
+
+        byte[] dump = lettuceRedisTemplate.dump("cluster");
+        System.out.println("dump = " + Arrays.toString(dump));
+
+    }
+
+
+    @Test
+    public void testRepo(){
+        Student student = new Student("1","thushear","lucas");
+        studentRepository.save(student);
+        Student student1 = studentRepository.findOne("1");
+        System.out.println("student1 = " + student1);
     }
 
 
