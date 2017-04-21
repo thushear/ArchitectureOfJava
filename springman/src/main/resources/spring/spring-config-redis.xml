@@ -55,4 +55,8 @@
           p:connectionFactory-ref="lettuceConnectionFactory" p:keySerializer-ref="stringRedisSerializer"
           p:valueSerializer-ref="stringRedisSerializer" />
 
+
+
+
+
 </beans>

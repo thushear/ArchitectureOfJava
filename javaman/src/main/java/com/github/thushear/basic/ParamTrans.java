@@ -5,6 +5,9 @@ package com.github.thushear.basic;
  */
 public class ParamTrans {
 
+
+
+
     public static void main(String[] args) {
         int a = 1;int b =2;
         String aa = "aa"; String bb = "bb";
@@ -14,6 +17,11 @@ public class ParamTrans {
         System.out.println("a = " + a);
         System.out.println("aa = " + aa);
         System.out.println("bb = " + bb);
+
+        byte first = (byte)1;
+        System.out.println(first & (byte)15);
+
+
     }
 
 
