@@ -6,6 +6,7 @@ package com.github.thushear.redis.utils.shard;
 public interface ShardPolicy  {
 
 
+    ShardInfo getShard(String key);
 
 
 }
