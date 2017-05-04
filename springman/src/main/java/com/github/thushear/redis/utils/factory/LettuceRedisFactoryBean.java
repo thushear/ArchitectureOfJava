@@ -21,6 +21,7 @@ public class LettuceRedisFactoryBean implements FactoryBean , DisposableBean {
 
 
     private String shardInfos ;
+
     private Map<ShardInfo, RedisAsyncCommands<String, String>> SHARD_2_COMMANDS = new HashMap<>();
 
 

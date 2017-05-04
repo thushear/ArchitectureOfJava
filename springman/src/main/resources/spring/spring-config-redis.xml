@@ -56,7 +56,7 @@
           p:valueSerializer-ref="stringRedisSerializer" />
 
 
-    <bean id="redisUtils" class="com.github.thushear.redis.utils.factory.LettuceRedisFactoryBean" p:shardInfos=""/>
+    <bean id="redisUtils" class="com.github.thushear.redis.utils.factory.LettuceRedisFactoryBean" p:shardInfos="192.168.56.102:6384,192.168.56.102:6385"/>
 
 
 
