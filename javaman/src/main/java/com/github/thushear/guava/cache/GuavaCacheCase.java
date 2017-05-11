@@ -112,4 +112,29 @@ public class GuavaCacheCase {
         System.out.println(cacheStats);
 
     }
+
+
+
+
+
+    static void testEviction(){
+
+        Cache<String,String> localCache = CacheBuilder.newBuilder().maximumSize(20)
+                .recordStats().refreshAfterWrite(3,TimeUnit.SECONDS).removalListener(new RemovalListener<String, String>() {
+                    @Override
+                    public void onRemoval(RemovalNotification<String, String> notification) {
+                        System.out.println("remove notification " + notification.getKey() + ":" + notification.getValue() + "||" + notification.getCause());
+                    }
+                })
+                .expireAfterWrite(10, TimeUnit.SECONDS).build();
+
+
+
+
+    }
+
+
+
+
+
 }
