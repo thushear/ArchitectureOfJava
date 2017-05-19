@@ -13,13 +13,13 @@ public class GuavaBaseCase {
 
 
     public static void main(String[] args) {
-        Optional optional = optionalCase();
-        System.out.println(optional.isPresent() + "|" + optional.orNull() + "|" + optional.toString() + "|" + optional.or(new Supplier() {
-            @Override
-            public Object get() {
-                return "supplier";
-            }
-        }));
+//        Optional optional = optionalCase();
+//        System.out.println(optional.isPresent() + "|" + optional.orNull() + "|" + optional.toString() + "|" + optional.or(new Supplier() {
+//            @Override
+//            public Object get() {
+//                return "supplier";
+//            }
+//        }));
 
 
 //        preConditionsCase();
@@ -28,7 +28,10 @@ public class GuavaBaseCase {
 //        objects();
 //        throwable();
 
-        joinerCase();
+//        joinerCase();
+        splliterCase();
+        charMatcherCase();
+        caseFormatCase();
     }
 
 
@@ -97,7 +100,47 @@ public class GuavaBaseCase {
     static void joinerCase(){
         Joiner joiner = Joiner.on(":");
         System.out.println(joiner.join("a","b","c","d"));
+
+        Joiner nullSkipJoiner = Joiner.on(" | ").useForNull("--");
+        String joinStr = nullSkipJoiner.join(Lists.newArrayList("hello","how low ","high"));
+        System.out.println("joinStr = " + joinStr);
     }
+
+
+    static void splliterCase(){
+        String str = "abc,,   ff,'',tel sla,\"\",    ,";
+        Splitter splitter = Splitter.on(",").omitEmptyStrings().trimResults();
+        splitter.split(str).forEach(s -> {
+            System.out.println("s = " + s);
+        });
+
+    }
+
+
+    static void charMatcherCase(){
+        String str = "abc,,   ff,'',tel sla,\"\",    ,123";
+        System.out.println(CharMatcher.DIGIT.retainFrom(str));
+        System.out.println(CharMatcher.DIGIT.removeFrom(str));
+        System.out.println(CharMatcher.DIGIT.countIn(str));
+
+        System.out.println(CharMatcher.JAVA_ISO_CONTROL.removeFrom(str));
+        System.out.println(CharMatcher.WHITESPACE.removeFrom(str));
+
+        str.getBytes(Charsets.UTF_8);
+
+    }
+
+
+    static void caseFormatCase(){
+
+        String caseFormat = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,"helloWorld");
+        System.out.println("caseFormat = " + caseFormat);
+        System.out.println(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN,"helloWorld"));
+
+
+
+    }
+
 
 }
 class Person {
