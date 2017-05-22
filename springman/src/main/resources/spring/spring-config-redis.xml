@@ -10,7 +10,7 @@
     <context:component-scan base-package="com.github.thushear.redis"/>
 
     <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-          p:hostName="192.168.56.102" p:port="6383" p:usePool="true"/>
+          p:hostName="192.168.56.102" p:port="6383" p:usePool="true" p:timeout="500"/>
 
     <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
     <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
