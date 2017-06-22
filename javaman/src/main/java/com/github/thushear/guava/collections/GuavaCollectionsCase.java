@@ -1,11 +1,13 @@
 package com.github.thushear.guava.collections;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.*;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -22,7 +24,9 @@ public class GuavaCollectionsCase {
 
 //        collectionUtilsCase();
 
-        iterablesCase();
+//        iterablesCase();
+
+        listsCase();
     }
 
 
@@ -174,6 +178,21 @@ public class GuavaCollectionsCase {
 
 
 
+    static  void  listsCase(){
+        List<Integer> fromList = Lists.newArrayList(1,2,3,4);
+        List<Integer> toList = Lists.transform(fromList, new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer input) {
+                return input * 2;
+            }
+        });
+
+        System.out.println("toList = " + toList);
+        System.out.println(toList.getClass().getName());
+        System.out.println(toList.size());
+    }
+
+
     static void iterablesCase(){
 
         Iterable<Integer> intList = Iterables.concat(Ints.asList(1,2,4), Ints.asList(6,8,9));
@@ -190,6 +209,8 @@ public class GuavaCollectionsCase {
         }));
 
     }
+
+
 
 
 }

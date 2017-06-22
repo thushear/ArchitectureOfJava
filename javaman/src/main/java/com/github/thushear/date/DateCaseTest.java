@@ -2,6 +2,7 @@ package com.github.thushear.date;
 
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -30,8 +31,16 @@ public class DateCaseTest {
         System.out.println(dateTime.isBefore(endDateTime));
         System.out.println(dateTime.toString("yyyyMMddHH"));
 
+
         String formatDateTime = DateTimeFormat.forPattern("yyyyMMddHHmmss").print(DateTime.now());
         System.out.println("formatDateTime = " + formatDateTime);
+
+        DateTime dateTimeParse = DateTimeFormat.forPattern("yyyyMMddHHmmss").parseDateTime("20170525170000");
+        System.out.println("dateTimeParse = " + dateTimeParse);
+
+        DateTime dateTimeParseMS = DateTimeFormat.forPattern("mm:ss").parseDateTime("01:22");
+        System.out.println("dateTimeParseMS" +  dateTimeParseMS.getSecondOfMinute());
+        System.out.println(dateTimeParseMS);
 
         Calendar endCalendar = Calendar.getInstance();
         endCalendar.set(2017,4,22,0,0);
