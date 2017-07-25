@@ -132,10 +132,10 @@ public class NaiveBayes {
         
         //the FeatureStats object contains statistics about all the features found in the documents
         FeatureStats stats = featureExtractor.extractFeatureStats(dataset); //extract the stats of the dataset
-        
+        System.out.println("stats = " + stats);
         //we pass this information to the feature selection algorithm and we get a list with the selected features
         Map<String, Double> selectedFeatures = featureExtractor.chisquare(stats, chisquareCriticalValue);
-        
+        System.out.println("selectedFeatures = " + selectedFeatures);
         //clip from the stats all the features that are not selected
         Iterator<Map.Entry<String, Map<String, Integer>>> it = stats.featureCategoryJointCount.entrySet().iterator();
         while(it.hasNext()) {
@@ -164,6 +164,7 @@ public class NaiveBayes {
         
         
         //produce the feature stats and select the best features
+        // 卡方检测 选取特征
         FeatureStats featureStats =  selectFeatures(dataset);
         
         
@@ -213,6 +214,7 @@ public class NaiveBayes {
             }
         }
         
+        System.out.println("knowledgeBase logPriors = " + knowledgeBase.logPriors);
         //We are performing laplace smoothing (also known as add-1). This requires to estimate the total feature occurrences in each category
         Map<String, Double> featureOccurrencesInCategory = new HashMap<>();
         
@@ -228,7 +230,7 @@ public class NaiveBayes {
             }
             featureOccurrencesInCategory.put(category, featureOccSum);
         }
-        
+        System.out.println("featureOccurrencesInCategory = " + featureOccurrencesInCategory);
         //estimate log likelihoods
         String feature;
         Integer count;
@@ -251,7 +253,10 @@ public class NaiveBayes {
                 knowledgeBase.logLikelihoods.get(feature).put(category, logLikelihood);
             }
         }
+        System.out.println("knowledgeBase = " + knowledgeBase.logLikelihoods);
         featureOccurrencesInCategory=null;
+
+
     }
     
     /**
@@ -273,6 +278,7 @@ public class NaiveBayes {
      * @throws IllegalArgumentException
      */
     public String predict(String text) throws IllegalArgumentException {
+        System.out.println("text = " + text);
         if(knowledgeBase == null) {
             throw new IllegalArgumentException("Knowledge Bases missing: Make sure you train first a classifier before you use it.");
         }
@@ -305,9 +311,11 @@ public class NaiveBayes {
                 occurrences = entry2.getValue(); //get its occurrences in text
                 
                 logprob += occurrences*knowledgeBase.logLikelihoods.get(feature).get(category); //multiply loglikelihood score with occurrences
+
             }
             //predictionScores.put(category, logprob); 
-            
+            System.out.println("logprob = " + logprob);
+            System.out.println(" category =" + category);
             if(logprob>maxScore) {
                 maxScore=logprob;
                 maxScoreCategory=category;

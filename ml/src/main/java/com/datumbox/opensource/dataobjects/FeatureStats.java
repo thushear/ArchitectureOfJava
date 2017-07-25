@@ -50,4 +50,13 @@ public class FeatureStats {
         featureCategoryJointCount = new HashMap<>();
         categoryCounts = new HashMap<>();
     }
+
+    @Override
+    public String toString() {
+        return "FeatureStats{" +
+                "n=" + n +
+                ", featureCategoryJointCount=" + featureCategoryJointCount +
+                ", categoryCounts=" + categoryCounts +
+                '}';
+    }
 }
