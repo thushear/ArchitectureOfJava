@@ -21,6 +21,8 @@ import com.datumbox.opensource.dataobjects.FeatureStats;
 import com.datumbox.opensource.dataobjects.NaiveBayesKnowledgeBase;
 import com.datumbox.opensource.features.FeatureExtraction;
 import com.datumbox.opensource.features.TextTokenizer;
+import org.springframework.cglib.core.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -135,6 +137,7 @@ public class NaiveBayes {
         System.out.println("stats = " + stats);
         //we pass this information to the feature selection algorithm and we get a list with the selected features
         Map<String, Double> selectedFeatures = featureExtractor.chisquare(stats, chisquareCriticalValue);
+
         System.out.println("selectedFeatures = " + selectedFeatures);
         //clip from the stats all the features that are not selected
         Iterator<Map.Entry<String, Map<String, Integer>>> it = stats.featureCategoryJointCount.entrySet().iterator();
