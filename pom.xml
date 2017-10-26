@@ -152,6 +152,7 @@
     <module>msf</module>
     <module>netty</module>
     <module>async</module>
+    <module>springdata</module>
   </modules>
   <build>
     <plugins>
