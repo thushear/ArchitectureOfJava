@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="TRACE">
+
+    <Properties>
+        <Property name="logpath">/export/Logs/springboot/</Property>
+        <Property name="logfile">/export/Logs/springboot/springboot.log</Property>
+    </Properties>
+
+    <Appenders>
+
+        <RollingFile name="RollingFile" fileName="${logfile}"
+                     filePattern="${logpath}$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %c{1.} (%F:%L) - %m%n"/>
+        </Console>
+        <Async name="ASYNC">
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="STDOUT"/>
+        </Async>
+        <Async name="ASYNCCONSOLE">
+            <AppenderRef ref="STDOUT"/>
+        </Async>
+
+
+
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.github.thushear" level="TRACE" >
+            <AppenderRef ref="ASYNC"/>
+        </Logger>
+
+        <Root level="TRACE">
+            <AppenderRef ref="ASYNCCONSOLE"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
