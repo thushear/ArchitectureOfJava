@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="TRACE">
+<Configuration status="INFO">
 
     <Properties>
         <Property name="logpath">/export/Logs/springboot/</Property>
@@ -35,11 +35,11 @@
     </Appenders>
 
     <Loggers>
-        <Logger name="com.github.thushear" level="TRACE" >
+        <Logger name="com.github.thushear" level="INFO" >
             <AppenderRef ref="ASYNC"/>
         </Logger>
 
-        <Root level="TRACE">
+        <Root level="INFO">
             <AppenderRef ref="ASYNCCONSOLE"/>
         </Root>
     </Loggers>
