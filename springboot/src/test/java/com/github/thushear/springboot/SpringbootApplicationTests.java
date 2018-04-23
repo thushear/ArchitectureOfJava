@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.concurrent.Future;
 
@@ -30,6 +32,17 @@ public class SpringbootApplicationTests {
 		mockDao = Mockito.mock(MockDao.class);
 		Mockito.when(mockDao.getName()).thenReturn("mock");
 	}
+
+
+	@Test
+	public void testMono(){
+
+		Mono<String> mono = WebClient.create("http://localhost:8080/hellomono").get().retrieve().bodyToMono(String.class);
+
+		System.err.println("mono:" + mono.toString());
+
+	}
+
 
 	@Test
 	public void contextLoads() {

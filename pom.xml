@@ -153,6 +153,8 @@
     <module>netty</module>
     <module>async</module>
     <module>springdata</module>
+    <module>springboot</module>
+    <module>work</module>
   </modules>
   <build>
     <plugins>

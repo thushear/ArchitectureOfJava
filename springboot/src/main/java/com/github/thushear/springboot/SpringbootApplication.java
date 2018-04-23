@@ -19,8 +19,8 @@ public class SpringbootApplication {
 	}
 
 
-	@Bean
-	public RouterFunction<ServerResponse> monoEcho(EchoHandler echoHandler){
-		return RouterFunctions.route(RequestPredicates.POST("/echo"),echoHandler::echo);
-	}
+//	@Bean
+//	public RouterFunction<ServerResponse> monoEcho(EchoHandler echoHandler){
+//		return RouterFunctions.route(RequestPredicates.POST("/echo"),echoHandler::echo);
+//	}
 }

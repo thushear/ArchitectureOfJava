@@ -27,6 +27,8 @@ public class CompletableFutureMan {
         });
         System.out.println(f.get());
 
+
+
     }
 
 

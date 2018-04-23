@@ -15,10 +15,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.HandlerMapping;
+//import org.springframework.web.servlet.DispatcherServlet;
+//import org.springframework.web.servlet.HandlerMapping;
+import reactor.core.publisher.Mono;
+
+
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +48,19 @@ public class IndexController implements ApplicationContextAware{
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
+
+
+    @GetMapping("/hellomono")
+    public Mono<String> hello(){
+        return   Mono.just("hello world!").delayElement(Duration.ofSeconds(2));
+//        return Mono.just("hello world");
+    }
+
+
+
     @GetMapping("/index")
-    public String index(){
+    public String index() throws InterruptedException {
+        Thread.sleep(61000);
         LOGGER.trace("trace");
         LOGGER.debug("debug");
         LOGGER.info("info");
@@ -57,25 +75,25 @@ public class IndexController implements ApplicationContextAware{
     }
 
 
-    @GetMapping("/app")
-    public String[] app(HttpServletRequest request){
-        ApplicationContext parent = applicationContext.getParent();
-        System.err.println("parent:" + parent);
-        System.err.println("app:" + applicationContext);
-        System.err.println("applicationContext.getParentBeanFactory():" + applicationContext.getParentBeanFactory());
-        WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(request.getServletContext());
-        System.err.println("webapp:" + webApplicationContext);
-        System.err.println("webappbean:" + webApplicationContext.getParentBeanFactory());
-        ApplicationContext appContext = webApplicationContext.getParent();
-        System.err.println("appcontext:" + appContext);
-        DispatcherServlet dispatcherServlet = webApplicationContext.getBean(DispatcherServlet.class);
-        System.err.println("dis:" + dispatcherServlet);
-        Map mapsource = webApplicationContext.getBean("mapSource",Map.class);
-        System.err.println("mapsource:" + mapsource);
-        List<HandlerMapping> handlerMappings = dispatcherServlet.getHandlerMappings();
-
-        return applicationContext.getBeanDefinitionNames();
-    }
+//    @GetMapping("/app")
+//    public String[] app(HttpServletRequest request){
+//        ApplicationContext parent = applicationContext.getParent();
+//        System.err.println("parent:" + parent);
+//        System.err.println("app:" + applicationContext);
+//        System.err.println("applicationContext.getParentBeanFactory():" + applicationContext.getParentBeanFactory());
+//        WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(request.getServletContext());
+//        System.err.println("webapp:" + webApplicationContext);
+//        System.err.println("webappbean:" + webApplicationContext.getParentBeanFactory());
+//        ApplicationContext appContext = webApplicationContext.getParent();
+//        System.err.println("appcontext:" + appContext);
+//        DispatcherServlet dispatcherServlet = webApplicationContext.getBean(DispatcherServlet.class);
+//        System.err.println("dis:" + dispatcherServlet);
+//        Map mapsource = webApplicationContext.getBean("mapSource",Map.class);
+//        System.err.println("mapsource:" + mapsource);
+//        List<HandlerMapping> handlerMappings = dispatcherServlet.getHandlerMappings();
+//
+//        return applicationContext.getBeanDefinitionNames();
+//    }
 
 
     @GetMapping("/event")
@@ -116,6 +134,20 @@ public class IndexController implements ApplicationContextAware{
 
 
         return responseEntities;
+    }
+
+
+    @GetMapping("/echo")
+    public void testEcho(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = 0; i < 3072; i++) {
+            stringBuffer.append(i);
+        }
+        PrintWriter out = response.getWriter();
+        out.println();
+        out.flush();
+
     }
 
 
