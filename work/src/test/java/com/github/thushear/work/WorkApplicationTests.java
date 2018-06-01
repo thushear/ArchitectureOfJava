@@ -33,6 +33,8 @@ public class WorkApplicationTests {
 		BigDecimal aa = new BigDecimal(a);
 		BigDecimal aaa = aa.divide(new BigDecimal(28),BigDecimal.ROUND_CEILING);
 		System.err.println(aaa.intValue());
+		Integer bbb = null;
+		System.err.println( bbb / 29);
 
 	}
 
